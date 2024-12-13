@@ -59,17 +59,72 @@ function handleDOCX(file) {
 }
 
 function displayRecipe(content) {
-    const recipeList = document.getElementById('recipes-list');
+    const allList = document.getElementById('recipes-list');
+    const breakfastList = document.getElementById('breakfast-list');
+    const lunchList = document.getElementById('lunch-list');
+    const dinnerList = document.getElementById('dinner-list');
+    const dessertList = document.getElementById('dessert-list');
 
     const recipeItem = document.createElement('li');
     recipeItem.className = 'recipe-item';
     recipeItem.textContent = content;
-    
-    recipeList.appendChild(recipeItem);
+
+    // Add to "All" category
+    allList.appendChild(recipeItem.cloneNode(true));
+
+    // Categorize based on a simple keyword check in content (e.g., breakfast, lunch, dinner, dessert)
+    if (/breakfast/i.test(content)) {
+        breakfastList.appendChild(recipeItem.cloneNode(true));
+    } else if (/lunch/i.test(content)) {
+        lunchList.appendChild(recipeItem.cloneNode(true));
+    } else if (/dinner/i.test(content)) {
+        dinnerList.appendChild(recipeItem.cloneNode(true));
+    } else if (/dessert/i.test(content)) {
+        dessertList.appendChild(recipeItem.cloneNode(true));
+    }
 }
 
-// Initialize SortableJS
+// Initialize SortableJS for each list
 new Sortable(document.getElementById('recipes-list'), {
     animation: 150,
     ghostClass: 'sortable-ghost'
+});
+
+new Sortable(document.getElementById('breakfast-list'), {
+    animation: 150,
+    ghostClass: 'sortable-ghost'
+});
+
+new Sortable(document.getElementById('lunch-list'), {
+    animation: 150,
+    ghostClass: 'sortable-ghost'
+});
+
+new Sortable(document.getElementById('dinner-list'), {
+    animation: 150,
+    ghostClass: 'sortable-ghost'
+});
+
+new Sortable(document.getElementById('dessert-list'), {
+    animation: 150,
+    ghostClass: 'sortable-ghost'
+});
+
+function openCategory(evt, categoryName) {
+    var i, tabcontent, tablinks;
+    tabcontent = document.getElementsByClassName("tabcontent");
+    for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+    }
+    tablinks = document.getElementsByClassName("tablinks");
+    for (i = 0; i < tablinks.length; i++) {
+        tablinks[i].className = tablinks[i].className.replace(" active", "");
+    }
+    document.getElementById(categoryName).style.display = "block";
+    evt.currentTarget.className += " active";
+}
+
+// Open default tab
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelector('.tablinks').click();
 });
