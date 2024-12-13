@@ -61,9 +61,15 @@ function handleDOCX(file) {
 function displayRecipe(content) {
     const recipeList = document.getElementById('recipes-list');
 
-    const recipeItem = document.createElement('div');
+    const recipeItem = document.createElement('li');
     recipeItem.className = 'recipe-item';
     recipeItem.textContent = content;
     
     recipeList.appendChild(recipeItem);
 }
+
+// Initialize SortableJS
+new Sortable(document.getElementById('recipes-list'), {
+    animation: 150,
+    ghostClass: 'sortable-ghost'
+});

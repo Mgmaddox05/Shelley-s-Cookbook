@@ -68,6 +68,8 @@ button:hover {
 
 #recipes-list {
     margin-top: 20px;
+    padding: 0;
+    list-style-type: none;
 }
 
 .recipe-item {
@@ -78,6 +80,7 @@ button:hover {
     border-radius: 4px;
     font-size: 1em;
     white-space: pre-wrap; /* Preserve white spaces and line breaks */
+    cursor: grab;
 }
 
 footer {
