@@ -34,7 +34,7 @@ label {
     font-weight: bold;
 }
 
-input, select, textarea {
+input {
     width: 100%;
     padding: 10px;
     margin-bottom: 10px;
@@ -67,16 +67,8 @@ button:hover {
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 4px;
-}
-
-.recipe-item h4 {
-    margin-top: 0;
-    font-size: 1.2em;
-}
-
-.recipe-item p {
-    margin: 5px 0;
     font-size: 1em;
+    white-space: pre-wrap; /* Preserve white spaces and line breaks */
 }
 
 @media (max-width: 600px) {
@@ -92,20 +84,12 @@ button:hover {
         font-size: 1.2em;
     }
 
-    input, select, textarea, button {
+    input, button {
         font-size: 1em;
         padding: 8px;
     }
 
     .recipe-item {
         padding: 8px;
-    }
-
-    .recipe-item h4 {
-        font-size: 1em;
-    }
-
-    .recipe-item p {
-        font-size: 0.9em;
     }
 }

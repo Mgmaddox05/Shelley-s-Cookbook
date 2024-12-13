@@ -60,27 +60,10 @@ function handleDOCX(file) {
 
 function displayRecipe(content) {
     const recipeList = document.getElementById('recipes-list');
-    
-    const nameMatch = content.match(/Name:\s*(.*)/);
-    const typeMatch = content.match(/Type:\s*(.*)/);
-    const ingredientsMatch = content.match(/Ingredients:\s*([\s\S]*?)\nInstructions:/);
-    const instructionsMatch = content.match(/Instructions:\s*([\s\S]*)/);
-
-    const name = nameMatch ? nameMatch[1] : "Unknown";
-    const type = typeMatch ? typeMatch[1] : "Unknown";
-    const ingredients = ingredientsMatch ? ingredientsMatch[1] : "Not provided";
-    const instructions = instructionsMatch ? instructionsMatch[1] : "Not provided";
 
     const recipeItem = document.createElement('div');
     recipeItem.className = 'recipe-item';
-    recipeItem.innerHTML = `
-        <h4>${name}</h4>
-        <p><strong>Type:</strong> ${type}</p>
-        <p><strong>Ingredients:</strong></p>
-        <p>${ingredients.replace(/\n/g, '<br>')}</p>
-        <p><strong>Instructions:</strong></p>
-        <p>${instructions.replace(/\n/g, '<br>')}</p>
-    `;
+    recipeItem.textContent = content;
     
     recipeList.appendChild(recipeItem);
 }
