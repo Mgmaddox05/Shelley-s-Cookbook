@@ -9,19 +9,28 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.2/mammoth.browser.min.js"></script>
 </head>
 <body>
-    <div class="container">
-        <h1>White's Cookbook</h1>
-        <form id="recipe-form">
+    <header>
+        <nav>
+            <h1>White's Cookbook</h1>
+        </nav>
+    </header>
+    <main class="container">
+        <section class="upload-section">
             <h2>Upload a Recipe</h2>
-            <label for="file">Upload Recipe File:</label>
-            <input type="file" id="file" name="file" accept=".txt,.pdf,.docx" required><br>
-            <button type="submit">Add Recipe</button>
-        </form>
-        <div id="recipes-container">
+            <form id="recipe-form">
+                <label for="file">Upload Recipe File:</label>
+                <input type="file" id="file" name="file" accept=".txt,.pdf,.docx" required><br>
+                <button type="submit">Add Recipe</button>
+            </form>
+        </section>
+        <section id="recipes-container">
             <h2>Recipes</h2>
             <div id="recipes-list"></div>
-        </div>
-    </div>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2024 White's Cookbook. All rights reserved.</p>
+    </footer>
     <script src="script.js"></script>
 </body>
 </html>
