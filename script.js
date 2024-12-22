@@ -2,63 +2,77 @@ document.getElementById('recipe-form').addEventListener('submit', function (e) {
     e.preventDefault();
 
     const file = document.getElementById('file').files[0];
+    const imageFile = document.getElementById('image').files[0];
 
     if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const content = e.target.result;
+            if (imageFile) {
+                const imageReader = new FileReader();
+                imageReader.onload = function(e) {
+                    const imageUrl = e.target.result;
+                    displayRecipe(content, imageUrl);
+                };
+                imageReader.readAsDataURL(imageFile);
+            } else {
+                displayRecipe(content, null);
+            }
+        };
+
         if (file.type === "application/pdf") {
-            handlePDF(file);
+            reader.onload = function(e) {
+                const typedArray = new Uint8Array(e.target.result);
+                pdfjsLib.getDocument(typedArray).promise.then(pdf => {
+                    pdf.getPage(1).then(page => {
+                        page.getTextContent().then(textContent => {
+                            let content = '';
+                            textContent.items.forEach(item => {
+                                content += item.str + ' ';
+                            });
+                            if (imageFile) {
+                                const imageReader = new FileReader();
+                                imageReader.onload = function(e) {
+                                    const imageUrl = e.target.result;
+                                    displayRecipe(content, imageUrl);
+                                };
+                                imageReader.readAsDataURL(imageFile);
+                            } else {
+                                displayRecipe(content, null);
+                            }
+                        });
+                    });
+                });
+            };
+            reader.readAsArrayBuffer(file);
         } else if (file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") {
-            handleDOCX(file);
+            reader.onload = function(e) {
+                const arrayBuffer = e.target.result;
+                mammoth.extractRawText({arrayBuffer: arrayBuffer})
+                    .then(result => {
+                        const content = result.value;
+                        if (imageFile) {
+                            const imageReader = new FileReader();
+                            imageReader.onload = function(e) {
+                                const imageUrl = e.target.result;
+                                displayRecipe(content, imageUrl);
+                            };
+                            imageReader.readAsDataURL(imageFile);
+                        } else {
+                            displayRecipe(content, null);
+                        }
+                    })
+                    .catch(err => console.error(err));
+            };
+            reader.readAsArrayBuffer(file);
         } else {
-            handleText(file);
+            reader.readAsText(file);
         }
     }
-
     this.reset();
 });
 
-function handleText(file) {
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        const content = e.target.result;
-        displayRecipe(content);
-    };
-    reader.readAsText(file);
-}
-
-function handlePDF(file) {
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        const typedArray = new Uint8Array(e.target.result);
-        pdfjsLib.getDocument(typedArray).promise.then(pdf => {
-            pdf.getPage(1).then(page => {
-                page.getTextContent().then(textContent => {
-                    let content = '';
-                    textContent.items.forEach(item => {
-                        content += item.str + ' ';
-                    });
-                    displayRecipe(content);
-                });
-            });
-        });
-    };
-    reader.readAsArrayBuffer(file);
-}
-
-function handleDOCX(file) {
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        const arrayBuffer = e.target.result;
-        mammoth.extractRawText({arrayBuffer: arrayBuffer})
-            .then(result => {
-                const content = result.value;
-                displayRecipe(content);
-            })
-            .catch(err => console.error(err));
-    };
-    reader.readAsArrayBuffer(file);
-}
-
-function displayRecipe(content) {
+function displayRecipe(content, imageUrl) {
     const allList = document.getElementById('recipes-list');
     const breakfastList = document.getElementById('breakfast-list');
     const lunchList = document.getElementById('lunch-list');
@@ -67,7 +81,16 @@ function displayRecipe(content) {
 
     const recipeItem = document.createElement('li');
     recipeItem.className = 'recipe-item';
-    recipeItem.textContent = content;
+    
+    if (imageUrl) {
+        const imageElement = document.createElement('img');
+        imageElement.src = imageUrl;
+        recipeItem.appendChild(imageElement);
+    }
+
+    const textElement = document.createElement('div');
+    textElement.textContent = content;
+    recipeItem.appendChild(textElement);
 
     // Add to "All" category
     allList.appendChild(recipeItem.cloneNode(true));
@@ -85,29 +108,11 @@ function displayRecipe(content) {
 }
 
 // Initialize SortableJS for each list
-new Sortable(document.getElementById('recipes-list'), {
-    animation: 150,
-    ghostClass: 'sortable-ghost'
-});
-
-new Sortable(document.getElementById('breakfast-list'), {
-    animation: 150,
-    ghostClass: 'sortable-ghost'
-});
-
-new Sortable(document.getElementById('lunch-list'), {
-    animation: 150,
-    ghostClass: 'sortable-ghost'
-});
-
-new Sortable(document.getElementById('dinner-list'), {
-    animation: 150,
-    ghostClass: 'sortable-ghost'
-});
-
-new Sortable(document.getElementById('dessert-list'), {
-    animation: 150,
-    ghostClass: 'sortable-ghost'
+['recipes-list', 'breakfast-list', 'lunch-list', 'dinner-list', 'dessert-list'].forEach(id => {
+    new Sortable(document.getElementById(id), {
+        animation: 150,
+        ghostClass: 'sortable-ghost'
+    });
 });
 
 function openCategory(evt, categoryName) {

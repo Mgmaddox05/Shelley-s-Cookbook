@@ -13,6 +13,7 @@
     <header>
         <nav>
             <h1>White's Cookbook</h1>
+            <a href="add-recipe.html">Add Recipe</a>
         </nav>
     </header>
     <main class="container">
@@ -21,6 +22,8 @@
             <form id="recipe-form">
                 <label for="file">Upload Recipe File:</label>
                 <input type="file" id="file" name="file" accept=".txt,.pdf,.docx" required><br>
+                <label for="image">Upload Recipe Image:</label>
+                <input type="file" id="image" name="image" accept="image/*"><br>
                 <button type="submit">Add Recipe</button>
             </form>
         </section>
