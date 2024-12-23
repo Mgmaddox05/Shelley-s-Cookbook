@@ -1,24 +1,31 @@
-document.getElementById('add-recipe-form').addEventListener('submit', function(e) {
-    e.preventDefault();
+function startVoiceRecognition(inputId) {
+    // Check if the Web Speech API is supported
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+        console.error('Speech Recognition API not supported in this browser.');
+        alert('Your browser does not support the Speech Recognition API. Please use a supported browser.');
+        return;
+    }
 
-    const recipeName = document.getElementById('recipe-name').value;
-    const recipeType = document.getElementById('recipe-type').value;
-    const ingredients = document.getElementById('ingredients').value;
-    const instructions = document.getElementById('instructions').value;
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'en-US';
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
 
-    // Send recipe data to backend
-    fetch('http://localhost:5000/api/recipes', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name: recipeName, type: recipeType, ingredients, instructions }),
-    })
-    .then(response => response.json())
-    .then(data => {
-        alert('Recipe added successfully!');
-    })
-    .catch(err => console.error('Error:', err));
+    recognition.start();
 
-    this.reset();
-});
+    recognition.onresult = (event) => {
+        const speechResult = event.results[0][0].transcript;
+        console.log('Speech recognized:', speechResult);
+        document.getElementById(inputId).value = speechResult;
+    };
+
+    recognition.onerror = (event) => {
+        console.error('Speech recognition error:', event.error);
+    };
+
+    recognition.onspeechend = () => {
+        recognition.stop();
+        console.log('Speech recognition has stopped.');
+    };
+}

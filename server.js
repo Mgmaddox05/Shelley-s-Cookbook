@@ -20,13 +20,9 @@ mongoose.connect('mongodb://localhost/shelleys-cookbook', {
   .catch(err => console.log(err));
 
 // Routes
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
+const recipesRoute = require('./routes/recipes');
 
-app.get('/add-recipe', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'add-recipe.html'));
-});
+app.use('/api/recipes', recipesRoute);
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);

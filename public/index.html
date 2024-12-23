@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>White's Cookbook</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="css/styles.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.6.347/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.2/mammoth.browser.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
@@ -13,20 +13,10 @@
     <header>
         <nav>
             <h1>White's Cookbook</h1>
-            <a href="public/add-recipe.html">Add Recipe</a>
+            <a href="add-recipe.html">Add Recipe</a>
         </nav>
     </header>
     <main class="container">
-        <section class="upload-section">
-            <h2>Upload a Recipe</h2>
-            <form id="recipe-form">
-                <label for="file">Upload Recipe File:</label>
-                <input type="file" id="file" name="file" accept=".txt,.pdf,.docx" required><br>
-                <label for="image">Upload Recipe Image:</label>
-                <input type="file" id="image" name="image" accept="image/*"><br>
-                <button type="submit">Add Recipe</button>
-            </form>
-        </section>
         <section id="recipes-container">
             <h2>Recipes</h2>
             <div class="tab">
@@ -56,6 +46,6 @@
     <footer>
         <p>&copy; 2024 White's Cookbook. All rights reserved.</p>
     </footer>
-    <script src="script.js"></script>
+    <script src="js/script.js"></script>
 </body>
 </html>
