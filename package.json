@@ -1,0 +1,32 @@
+{
+  "name": "shelleys-cookbook",
+  "version": "1.0.0",
+  "description": "A digital cookbook",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Mgmaddox05/Shelleys-Cookbook.git"
+  },
+  "keywords": [
+    "\"cookbook\"",
+    "\"recipes\"",
+    "\"christmas",
+    "gift\""
+  ],
+  "author": "Matthew Maddox",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Mgmaddox05/Shelleys-Cookbook/issues"
+  },
+  "homepage": "https://github.com/Mgmaddox05/Shelleys-Cookbook#readme",
+  "dependencies": {
+    "body-parser": "^1.20.3",
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "mongoose": "^8.9.2"
+  }
+}

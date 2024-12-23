@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Recipe - White's Cookbook</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <h1>White's Cookbook</h1>
+            <a href="public/index.html">Home</a>
+        </nav>
+    </header>
+    <main class="container">
+        <section class="add-recipe-section">
+            <h2>Add Recipe</h2>
+            <form id="add-recipe-form">
+                <label for="recipe-name">Recipe Name:</label>
+                <div class="input-container">
+                    <input type="text" id="recipe-name" name="recipe-name" required>
+                    <button type="button" onclick="startVoiceRecognition('recipe-name')">🎤</button>
+                </div>
+
+                <label for="recipe-type">Recipe Type:</label>
+                <div class="input-container">
+                    <input type="text" id="recipe-type" name="recipe-type" required>
+                    <button type="button" onclick="startVoiceRecognition('recipe-type')">🎤</button>
+                </div>
+
+                <label for="ingredients">Ingredients:</label>
+                <div class="input-container">
+                    <textarea id="ingredients" name="ingredients" rows="5" required></textarea>
+                    <button type="button" onclick="startVoiceRecognition('ingredients')">🎤</button>
+                </div>
+
+                <label for="instructions">Instructions:</label>
+                <div class="input-container">
+                    <textarea id="instructions" name="instructions" rows="5" required></textarea>
+                    <button type="button" onclick="startVoiceRecognition('instructions')">🎤</button>
+                </div>
+
+                <button type="submit">Add Recipe</button>
+            </form>
+        </section>
+    </main>
+    <script src="js/voice-to-text.js"></script>
+</body>
+</html>
