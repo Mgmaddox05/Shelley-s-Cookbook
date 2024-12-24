@@ -20,16 +20,22 @@
             e.preventDefault();
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
-            const res = await fetch('/register', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, password })
-            });
-            if (res.ok) {
-                alert('Sign Up Successful!');
-                window.location.href = 'login.html';
-            } else {
-                alert('Error signing up');
+            try {
+                const res = await fetch('/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    alert('Sign Up Successful!');
+                    window.location.href = 'login.html';
+                } else {
+                    alert('Error signing up: ' + data.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error signing up: ' + error.message);
             }
         });
     </script>
