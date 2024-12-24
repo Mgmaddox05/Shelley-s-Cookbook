@@ -6,7 +6,7 @@ const Recipe = require('./models/Recipe'); // Ensure the path is correct
 const app = express();
 app.use(express.json());
 
-const mongoURI = 'mongodb+srv://mgmaddox05:Kx3bhdig@cluster0.mongodb.net/<dbname>?retryWrites=true&w=majority';
+const mongoURI = 'mongodb+srv://mgmaddox05:Kx3bhdig@cookbook.r8ytb.mongodb.net/';
 mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => console.log('MongoDB connected'))
     .catch(err => console.log('MongoDB connection error:', err));
