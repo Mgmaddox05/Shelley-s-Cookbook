@@ -1,9 +1,8 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const bodyParser = require('body-parser');
-const User = require('./models/User');
+
 
 
 const app = express();
@@ -14,55 +13,7 @@ mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => console.log('MongoDB connected'))
     .catch(err => console.log('MongoDB connection error:', err));
 
-const UserSchema = new mongoose.Schema({
-    username: { type: String, required: true, unique: true },
-    password: { type: String, required: true }
-});
-const User = mongoose.model('User', UserSchema);
 
-app.post('/register', async (req, res) => {
-    const { username, password } = req.body;
-    try {
-        // Check if the username already exists
-        const existingUser = await User.findOne({ username });
-        if (existingUser) {
-            return res.status(400).json({ message: 'Username already exists' });
-        }
-
-        // Hash the password
-        const hashedPassword = await bcrypt.hash(password, 10);
-
-        // Create and save the new user
-        const user = new User({ username, password: hashedPassword });
-        await user.save();
-
-        // Respond with success message
-        res.status(201).json({ message: 'User registered successfully' });
-    } catch (err) {
-        // Log detailed error message and send JSON error response
-        console.error('Error registering user:', err);
-        res.status(400).json({ message: 'Error registering user', error: err.message });
-    }
-});
-
-
-app.post('/login', async (req, res) => {
-    const { username, password } = req.body;
-    try {
-        const user = await User.findOne({ username });
-        if (!user) {
-            return res.status(400).send('Invalid username or password');
-        }
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) {
-            return res.status(400).send('Invalid username or password');
-        }
-        const token = jwt.sign({ userId: user._id }, 'secretkey', { expiresIn: '1h' });
-        res.json({ token });
-    } catch (err) {
-        res.status(400).send('Error logging in');
-    }
-});
 
 const auth = (req, res, next) => {
     const token = req.header('Authorization').replace('Bearer ', '');
