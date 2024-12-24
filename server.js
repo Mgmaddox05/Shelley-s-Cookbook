@@ -7,35 +7,22 @@ const bodyParser = require('body-parser');
 const app = express();
 app.use(bodyParser.json());
 
-const mongoURI = 'mongodb+srv://mgmaddox05:Kx3bhdig@cookbook.r8ytb.mongodb.net/';
+const mongoURI = 'mongodb+srv://<username>:<password>@cluster0.mongodb.net/<dbname>?retryWrites=true&w=majority';
 mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => console.log('MongoDB connected'))
-    .catch(err => console.log(err));
+    .catch(err => console.log('MongoDB connection error:', err));
 
-// User schema
 const UserSchema = new mongoose.Schema({
-    email: { type: String, required: true, unique: true },
+    username: { type: String, required: true, unique: true },
     password: { type: String, required: true }
 });
 const User = mongoose.model('User', UserSchema);
 
-// Recipe schema
-const RecipeSchema = new mongoose.Schema({
-    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-    name: { type: String, required: true },
-    type: { type: String, required: true },
-    ingredients: { type: String, required: true },
-    instructions: { type: String, required: true },
-    photo: { type: String }
-});
-const Recipe = mongoose.model('Recipe', RecipeSchema);
-
-// User registration
 app.post('/register', async (req, res) => {
-    const { email, password } = req.body;
+    const { username, password } = req.body;
     try {
         const hashedPassword = await bcrypt.hash(password, 10);
-        const user = new User({ email, password: hashedPassword });
+        const user = new User({ username, password: hashedPassword });
         await user.save();
         res.status(201).send('User registered successfully');
     } catch (err) {
@@ -43,17 +30,16 @@ app.post('/register', async (req, res) => {
     }
 });
 
-// User login
 app.post('/login', async (req, res) => {
-    const { email, password } = req.body;
+    const { username, password } = req.body;
     try {
-        const user = await User.findOne({ email });
+        const user = await User.findOne({ username });
         if (!user) {
-            return res.status(400).send('Invalid email or password');
+            return res.status(400).send('Invalid username or password');
         }
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
-            return res.status(400).send('Invalid email or password');
+            return res.status(400).send('Invalid username or password');
         }
         const token = jwt.sign({ userId: user._id }, 'secretkey', { expiresIn: '1h' });
         res.json({ token });
@@ -62,7 +48,6 @@ app.post('/login', async (req, res) => {
     }
 });
 
-// Middleware to authenticate requests
 const auth = (req, res, next) => {
     const token = req.header('Authorization').replace('Bearer ', '');
     if (!token) {
@@ -77,19 +62,29 @@ const auth = (req, res, next) => {
     }
 };
 
-// Add recipe
+const RecipeSchema = new mongoose.Schema({
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    name: { type: String, required: true },
+    type: { type: String, required: true },
+    ingredients: { type: String, required: true },
+    instructions: { type: String, required: true },
+    photo: { type: String }
+});
+const Recipe = mongoose.model('Recipe', RecipeSchema);
+
 app.post('/recipes', auth, async (req, res) => {
     const { name, type, ingredients, instructions, photo } = req.body;
     try {
         const recipe = new Recipe({ userId: req.userId, name, type, ingredients, instructions, photo });
         await recipe.save();
+        console.log('Recipe saved:', recipe);
         res.status(201).send('Recipe added successfully');
     } catch (err) {
+        console.error('Error saving recipe:', err);
         res.status(400).send('Error adding recipe');
     }
 });
 
-// Get recipes
 app.get('/recipes', auth, async (req, res) => {
     try {
         const recipes = await Recipe.find({ userId: req.userId });
