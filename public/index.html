@@ -14,9 +14,6 @@
             </div>
             <div class="navbar-links">
                 <a href="add-recipe.html">Add Recipe</a>
-                <a id="login-btn" href="login.html">Login</a>
-                <span id="user-name" style="display:none;"></span>
-                <a id="logout-btn" href="#" style="display:none;" onclick="logout()">Sign Out</a>
             </div>
         </nav>
     </header>
@@ -80,25 +77,6 @@
         <p>&copy; 2024 White's Cookbook. All rights reserved.</p>
     </footer>
     <script>
-        // Check if user is logged in
-        const loggedIn = localStorage.getItem('loggedIn');
-        const userName = localStorage.getItem('userName');
-
-        if (loggedIn) {
-            document.getElementById('login-btn').style.display = 'none';
-            const userNameSpan = document.getElementById('user-name');
-            userNameSpan.style.display = 'inline';
-            userNameSpan.textContent = `Welcome, ${userName}!`;
-            document.getElementById('logout-btn').style.display = 'inline';
-        } else {
-            document.getElementById('login-btn').style.display = 'block';
-        }
-
-        function logout() {
-            localStorage.removeItem('loggedIn');
-            localStorage.removeItem('userName');
-            window.location.href = 'login.html';
-        }
 
         function openCategory(evt, categoryName) {
             var i, tabcontent, tablinks;
