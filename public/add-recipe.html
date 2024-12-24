@@ -11,14 +11,19 @@
     <form id="add-recipe-form">
         <label for="name">Recipe Name:</label>
         <input type="text" id="name" name="name" required>
+        <button type="button" onclick="startVoiceInput('name')">🎤</button>
         <label for="type">Type:</label>
         <input type="text" id="type" name="type" required>
+        <button type="button" onclick="startVoiceInput('type')">🎤</button>
         <label for="ingredients">Ingredients:</label>
         <textarea id="ingredients" name="ingredients" required></textarea>
+        <button type="button" onclick="startVoiceInput('ingredients')">🎤</button>
         <label for="instructions">Instructions:</label>
         <textarea id="instructions" name="instructions" required></textarea>
+        <button type="button" onclick="startVoiceInput('instructions')">🎤</button>
         <button type="submit">Add Recipe</button>
     </form>
+    <script src="js/voiceToText.js"></script>
     <script>
         document.getElementById('add-recipe-form').addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -46,6 +51,29 @@
                 alert('Error adding recipe: ' + error.message);
             }
         });
+
+        // Voice input function
+        function startVoiceInput(fieldId) {
+            if (!('webkitSpeechRecognition' in window)) {
+                alert('Your browser does not support speech recognition.');
+                return;
+            }
+
+            const recognition = new webkitSpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+
+            recognition.onresult = function(event) {
+                document.getElementById(fieldId).value = event.results[0][0].transcript;
+            };
+
+            recognition.onerror = function(event) {
+                console.error('Speech recognition error', event);
+                alert('Error with speech recognition: ' + event.error);
+            };
+
+            recognition.start();
+        }
     </script>
 </body>
 </html>
