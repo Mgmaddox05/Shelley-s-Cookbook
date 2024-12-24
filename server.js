@@ -37,12 +37,11 @@ app.post('/register', async (req, res) => {
         // Respond with success message
         res.status(201).json({ message: 'User registered successfully' });
     } catch (err) {
-        // Log detailed error message
+        // Log detailed error message and send JSON error response
         console.error('Error registering user:', err);
         res.status(400).json({ message: 'Error registering user', error: err.message });
     }
 });
-
 
 
 app.post('/login', async (req, res) => {
