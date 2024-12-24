@@ -48,9 +48,10 @@ app.post('/recipes', auth, async (req, res) => {
         res.status(201).send('Recipe added successfully');
     } catch (err) {
         console.error('Error saving recipe:', err);
-        res.status(400).send('Error adding recipe');
+        res.status(400).json({ message: 'Error adding recipe', error: err.message });
     }
 });
+
 
 app.get('/recipes', auth, async (req, res) => {
     try {
