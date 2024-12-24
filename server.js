@@ -1,60 +1,103 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const cors = require('cors');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const bodyParser = require('body-parser');
-const path = require('path');
 
 const app = express();
-const port = process.env.PORT || 5000;
-
-// Middleware
-app.use(cors());
 app.use(bodyParser.json());
-app.use(express.static(path.join(__dirname, 'public')));
 
-// MongoDB connection
-mongoose.connect('mongodb://localhost/shelleys-cookbook', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-}).then(() => console.log('MongoDB connected'))
-  .catch(err => console.log(err));
+const mongoURI = 'mongodb+srv://mgmaddox05:<Kx3bhdig>@cookbook.r8ytb.mongodb.net/';
+mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
+    .then(() => console.log('MongoDB connected'))
+    .catch(err => console.log(err));
 
-// Recipe model
-const Recipe = require('./models/recipe');
+// User schema
+const UserSchema = new mongoose.Schema({
+    email: { type: String, required: true, unique: true },
+    password: { type: String, required: true }
+});
+const User = mongoose.model('User', UserSchema);
 
-// Routes
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+// Recipe schema
+const RecipeSchema = new mongoose.Schema({
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    name: { type: String, required: true },
+    type: { type: String, required: true },
+    ingredients: { type: String, required: true },
+    instructions: { type: String, required: true },
+    photo: { type: String }
+});
+const Recipe = mongoose.model('Recipe', RecipeSchema);
+
+// User registration
+app.post('/register', async (req, res) => {
+    const { email, password } = req.body;
+    try {
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const user = new User({ email, password: hashedPassword });
+        await user.save();
+        res.status(201).send('User registered successfully');
+    } catch (err) {
+        res.status(400).send('Error registering user');
+    }
 });
 
-app.get('/add-recipe', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'add-recipe.html'));
+// User login
+app.post('/login', async (req, res) => {
+    const { email, password } = req.body;
+    try {
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(400).send('Invalid email or password');
+        }
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            return res.status(400).send('Invalid email or password');
+        }
+        const token = jwt.sign({ userId: user._id }, 'secretkey', { expiresIn: '1h' });
+        res.json({ token });
+    } catch (err) {
+        res.status(400).send('Error logging in');
+    }
 });
 
-app.get('/api/recipes', async (req, res) => {
-  try {
-    const recipes = await Recipe.find();
-    res.json(recipes);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
+// Middleware to authenticate requests
+const auth = (req, res, next) => {
+    const token = req.header('Authorization').replace('Bearer ', '');
+    if (!token) {
+        return res.status(401).send('Access denied');
+    }
+    try {
+        const decoded = jwt.verify(token, 'secretkey');
+        req.userId = decoded.userId;
+        next();
+    } catch (err) {
+        res.status(400).send('Invalid token');
+    }
+};
+
+// Add recipe
+app.post('/recipes', auth, async (req, res) => {
+    const { name, type, ingredients, instructions, photo } = req.body;
+    try {
+        const recipe = new Recipe({ userId: req.userId, name, type, ingredients, instructions, photo });
+        await recipe.save();
+        res.status(201).send('Recipe added successfully');
+    } catch (err) {
+        res.status(400).send('Error adding recipe');
+    }
 });
 
-app.post('/api/recipes', async (req, res) => {
-  const recipe = new Recipe({
-    name: req.body.name,
-    type: req.body.type,
-    ingredients: req.body.ingredients,
-    instructions: req.body.instructions
-  });
-  try {
-    const newRecipe = await recipe.save();
-    res.status(201).json(newRecipe);
-  } catch (err) {
-    res.status(400).json({ message: err.message });
-  }
+// Get recipes
+app.get('/recipes', auth, async (req, res) => {
+    try {
+        const recipes = await Recipe.find({ userId: req.userId });
+        res.json(recipes);
+    } catch (err) {
+        res.status(400).send('Error fetching recipes');
+    }
 });
 
-app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
-});
+const port = process.env.PORT || 5000;
+app.listen(port, () => console.log(`Server running on port ${port}`));

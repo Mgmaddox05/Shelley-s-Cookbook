@@ -54,6 +54,10 @@
                 <button type="button" onclick="document.getElementById('photo').click();">📸 Take Photo</button>
                 <img id="photo-preview" src="" alt="Photo Preview" style="display:none; width:100px; height:100px; margin-top:10px;">
             </div>
+            <div class="input-container">
+                <label for="file">Or Upload Recipe File:</label>
+                <input type="file" id="file" name="file" accept=".txt,.pdf">
+            </div>
             <button type="submit">Add Recipe</button>
         </form>
     </main>
@@ -62,7 +66,13 @@
     </footer>
     <script src="js/voice-to-text.js"></script>
     <script>
-        document.getElementById('recipe-form').addEventListener('submit', function(e) {
+        // Function to read and parse text files
+        function parseRecipeFile(text) {
+            const [name, ingredients, instructions] = text.split('\n\n');
+            return [name, ingredients, instructions];
+        }
+
+        document.getElementById('recipe-form').addEventListener('submit', async function(e) {
             e.preventDefault();
 
             const name = document.getElementById('name').value;
@@ -70,29 +80,48 @@
             const ingredients = document.getElementById('ingredients').value;
             const instructions = document.getElementById('instructions').value;
             const photo = document.getElementById('photo').files[0];
+            const file = document.getElementById('file').files[0];
+            const token = localStorage.getItem('token');
 
-            if (photo) {
+            // Function to save recipe to backend
+            async function saveRecipe(data) {
+                const res = await fetch('/recipes', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(data)
+                });
+                if (res.ok) {
+                    alert('Recipe added successfully!');
+                    window.location.href = 'index.html';
+                } else {
+                    alert('Error adding recipe');
+                }
+            }
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const text = e.target.result;
+                    const [fileName, fileIngredients, fileInstructions] = parseRecipeFile(text);
+                    saveRecipe({ name: fileName, type, ingredients: fileIngredients, instructions: fileInstructions, photo: null });
+                };
+                reader.readAsText(file);
+            } else if (photo) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     const photoData = e.target.result;
-                    saveRecipe(name, type, ingredients, instructions, photoData);
+                    saveRecipe({ name, type, ingredients, instructions, photo: photoData });
                 };
                 reader.readAsDataURL(photo);
             } else {
-                saveRecipe(name, type, ingredients, instructions, null);
+                saveRecipe({ name, type, ingredients, instructions, photo: null });
             }
         });
 
-        function saveRecipe(name, type, ingredients, instructions, photo) {
-            const recipes = JSON.parse(localStorage.getItem('recipes')) || {};
-            if (!recipes[type]) {
-                recipes[type] = [];
-            }
-            recipes[type].push({ name, ingredients, instructions, photo });
-            localStorage.setItem('recipes', JSON.stringify(recipes));
-            window.location.href = 'index.html';
-        }
-
+        // Function to display photo preview
         document.getElementById('photo').addEventListener('change', function() {
             const file = document.getElementById('photo').files[0];
             const preview = document.getElementById('photo-preview');
