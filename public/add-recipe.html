@@ -12,18 +12,33 @@
         <label for="name">Recipe Name:</label>
         <input type="text" id="name" name="name" required>
         <button type="button" onclick="startVoiceInput('name')">🎤</button>
+        
         <label for="type">Type:</label>
-        <input type="text" id="type" name="type" required>
-        <button type="button" onclick="startVoiceInput('type')">🎤</button>
+        <select id="type" name="type" required>
+            <option value="" disabled selected>Select type</option>
+            <option value="Poultry">Poultry</option>
+            <option value="Beef">Beef</option>
+            <option value="Pork">Pork</option>
+            <option value="Mixed Meats">Mixed Meats</option>
+            <option value="Mexican">Mexican</option>
+            <option value="Soups">Soups</option>
+            <option value="Pasta & Pizza">Pasta & Pizza</option>
+            <option value="Appetizers">Appetizers</option>
+            <option value="Snacks & Candy">Snacks & Candy</option>
+            <option value="Cakes, Pies & Desserts">Cakes, Pies & Desserts</option>
+            <!-- Include more categories as needed -->
+        </select>
+        
         <label for="ingredients">Ingredients:</label>
         <textarea id="ingredients" name="ingredients" required></textarea>
         <button type="button" onclick="startVoiceInput('ingredients')">🎤</button>
+        
         <label for="instructions">Instructions:</label>
         <textarea id="instructions" name="instructions" required></textarea>
         <button type="button" onclick="startVoiceInput('instructions')">🎤</button>
+        
         <button type="submit">Add Recipe</button>
     </form>
-    <script src="js/voiceToText.js"></script>
     <script>
         document.getElementById('add-recipe-form').addEventListener('submit', async function(e) {
             e.preventDefault();
