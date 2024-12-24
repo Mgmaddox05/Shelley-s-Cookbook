@@ -5,47 +5,138 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>White's Cookbook</title>
     <link rel="stylesheet" href="css/styles.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.6.347/pdf.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.2/mammoth.browser.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
 </head>
 <body>
     <header>
-        <nav>
-            <h1>White's Cookbook</h1>
-            <a href="add-recipe.html">Add Recipe</a>
+        <nav class="navbar">
+            <div class="navbar-brand">
+                <h1>White's Cookbook</h1>
+            </div>
+            <div class="navbar-links">
+                <a href="add-recipe.html">Add Recipe</a>
+                <a id="login-btn" href="login.html">Login</a>
+                <span id="user-name" style="display:none;"></span>
+                <a id="logout-btn" href="#" style="display:none;" onclick="logout()">Sign Out</a>
+            </div>
         </nav>
     </header>
     <main class="container">
-        <section id="recipes-container">
-            <h2>Recipes</h2>
-            <div class="tab">
-                <button class="tablinks" onclick="openCategory(event, 'All')">All</button>
-                <button class="tablinks" onclick="openCategory(event, 'Breakfast')">Breakfast</button>
-                <button class="tablinks" onclick="openCategory(event, 'Lunch')">Lunch</button>
-                <button class="tablinks" onclick="openCategory(event, 'Dinner')">Dinner</button>
-                <button class="tablinks" onclick="openCategory(event, 'Dessert')">Dessert</button>
-            </div>
-            <div id="All" class="tabcontent">
-                <ul id="recipes-list" class="sortable-list"></ul>
-            </div>
-            <div id="Breakfast" class="tabcontent">
-                <ul id="breakfast-list" class="sortable-list"></ul>
-            </div>
-            <div id="Lunch" class="tabcontent">
-                <ul id="lunch-list" class="sortable-list"></ul>
-            </div>
-            <div id="Dinner" class="tabcontent">
-                <ul id="dinner-list" class="sortable-list"></ul>
-            </div>
-            <div id="Dessert" class="tabcontent">
-                <ul id="dessert-list" class="sortable-list"></ul>
-            </div>
-        </section>
+        <h2>Recipes</h2>
+        <div class="tab">
+            <button class="tablinks" onclick="openCategory(event, 'Poultry')">Poultry</button>
+            <button class="tablinks" onclick="openCategory(event, 'Beef')">Beef</button>
+            <button class="tablinks" onclick="openCategory(event, 'Pork')">Pork</button>
+            <button class="tablinks" onclick="openCategory(event, 'Mixed Meats')">Mixed Meats</button>
+            <button class="tablinks" onclick="openCategory(event, 'Mexican')">Mexican</button>
+            <button class="tablinks" onclick="openCategory(event, 'Soups')">Soups</button>
+            <button class="tablinks" onclick="openCategory(event, 'Pasta & Pizza')">Pasta & Pizza</button>
+            <button class="tablinks" onclick="openCategory(event, 'Appetizers')">Appetizers</button>
+            <button class="tablinks" onclick="openCategory(event, 'Snacks & Candy')">Snacks & Candy</button>
+            <button class="tablinks" onclick="openCategory(event, 'Cakes, Pies & Deserts')">Cakes, Pies & Deserts</button>
+        </div>
+
+        <div id="Poultry" class="tabcontent">
+            <h3>Poultry</h3>
+            <div id="recipes-list-poultry"></div>
+        </div>
+        <div id="Beef" class="tabcontent">
+            <h3>Beef</h3>
+            <div id="recipes-list-beef"></div>
+        </div>
+        <div id="Pork" class="tabcontent">
+            <h3>Pork</h3>
+            <div id="recipes-list-pork"></div>
+        </div>
+        <div id="Mixed Meats" class="tabcontent">
+            <h3>Mixed Meats</h3>
+            <div id="recipes-list-mixed-meats"></div>
+        </div>
+        <div id="Mexican" class="tabcontent">
+            <h3>Mexican</h3>
+            <div id="recipes-list-mexican"></div>
+        </div>
+        <div id="Soups" class="tabcontent">
+            <h3>Soups</h3>
+            <div id="recipes-list-soups"></div>
+        </div>
+        <div id="Pasta & Pizza" class="tabcontent">
+            <h3>Pasta & Pizza</h3>
+            <div id="recipes-list-pasta-pizza"></div>
+        </div>
+        <div id="Appetizers" class="tabcontent">
+            <h3>Appetizers</h3>
+            <div id="recipes-list-appetizers"></div>
+        </div>
+        <div id="Snacks & Candy" class="tabcontent">
+            <h3>Snacks & Candy</h3>
+            <div id="recipes-list-snacks-candy"></div>
+        </div>
+        <div id="Cakes, Pies & Deserts" class="tabcontent">
+            <h3>Cakes, Pies & Deserts</h3>
+            <div id="recipes-list-cakes-pies-deserts"></div>
+        </div>
     </main>
     <footer>
         <p>&copy; 2024 White's Cookbook. All rights reserved.</p>
     </footer>
-    <script src="js/script.js"></script>
+    <script>
+        // Check if user is logged in
+        const loggedIn = localStorage.getItem('loggedIn');
+        const userName = localStorage.getItem('userName');
+
+        if (loggedIn) {
+            document.getElementById('login-btn').style.display = 'none';
+            const userNameSpan = document.getElementById('user-name');
+            userNameSpan.style.display = 'inline';
+            userNameSpan.textContent = `Welcome, ${userName}!`;
+            document.getElementById('logout-btn').style.display = 'inline';
+        } else {
+            document.getElementById('login-btn').style.display = 'block';
+        }
+
+        function logout() {
+            localStorage.removeItem('loggedIn');
+            localStorage.removeItem('userName');
+            window.location.href = 'login.html';
+        }
+
+        function openCategory(evt, categoryName) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            document.getElementById(categoryName).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+
+        // Display all recipes from local storage
+        const recipes = JSON.parse(localStorage.getItem('recipes')) || {};
+
+        Object.keys(recipes).forEach(category => {
+            recipes[category].forEach(recipe => {
+                const recipeDetails = `
+                    <div class="recipe-item">
+                        <h3>${recipe.name}</h3>
+                        ${recipe.photo ? `<img src="${recipe.photo}" alt="${recipe.name}" style="width:100px; height:100px;">` : ''}
+                        <p><strong>Ingredients:</strong></p>
+                        <p>${recipe.ingredients.replace(/\n/g, '<br>')}</p>
+                        <p><strong>Instructions:</strong></p>
+                        <p>${recipe.instructions.replace(/\n/g, '<br>')}</p>
+                    </div>
+                `;
+                document.getElementById(`recipes-list-${category.toLowerCase().replace(/ & /g, '-').replace(/\s+/g, '-')}`).innerHTML += recipeDetails;
+            });
+        });
+
+        // Set the first tab as active by default
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelector('.tab button').click();
+        });
+    </script>
 </body>
 </html>

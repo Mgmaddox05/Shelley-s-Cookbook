@@ -10,7 +10,7 @@
     <header>
         <nav>
             <h1>White's Cookbook</h1>
-            <a href="index.html">Home</a> <!-- Added Home link to index.html -->
+            <a href="index.html">Home</a>
         </nav>
     </header>
     <main class="container">
@@ -23,7 +23,19 @@
             </div>
             <div class="input-container">
                 <label for="type">Recipe Type:</label>
-                <input type="text" id="type" name="type" required>
+                <select id="type" name="type" required>
+                    <option value="">Select Category</option>
+                    <option value="Poultry">Poultry</option>
+                    <option value="Beef">Beef</option>
+                    <option value="Pork">Pork</option>
+                    <option value="Mixed Meats">Mixed Meats</option>
+                    <option value="Mexican">Mexican</option>
+                    <option value="Soups">Soups</option>
+                    <option value="Pasta & Pizza">Pasta & Pizza</option>
+                    <option value="Appetizers">Appetizers</option>
+                    <option value="Snacks & Candy">Snacks & Candy</option>
+                    <option value="Cakes, Pies & Deserts">Cakes, Pies & Deserts</option>
+                </select>
                 <button type="button" onclick="startVoiceRecognition('type')">🎤</button>
             </div>
             <div class="input-container">
@@ -36,6 +48,12 @@
                 <textarea id="instructions" name="instructions" required></textarea>
                 <button type="button" onclick="startVoiceRecognition('instructions')">🎤</button>
             </div>
+            <div class="input-container">
+                <label for="photo">Take a Picture:</label>
+                <input type="file" id="photo" name="photo" accept="image/*" capture="camera" style="display:none;">
+                <button type="button" onclick="document.getElementById('photo').click();">📸 Take Photo</button>
+                <img id="photo-preview" src="" alt="Photo Preview" style="display:none; width:100px; height:100px; margin-top:10px;">
+            </div>
             <button type="submit">Add Recipe</button>
         </form>
     </main>
@@ -43,34 +61,52 @@
         <p>&copy; 2024 White's Cookbook. All rights reserved.</p>
     </footer>
     <script src="js/voice-to-text.js"></script>
-    <script src="js/script.js"></script>
     <script>
-        document.getElementById('recipe-form').addEventListener('submit', async (e) => {
+        document.getElementById('recipe-form').addEventListener('submit', function(e) {
             e.preventDefault();
 
             const name = document.getElementById('name').value;
             const type = document.getElementById('type').value;
             const ingredients = document.getElementById('ingredients').value;
             const instructions = document.getElementById('instructions').value;
+            const photo = document.getElementById('photo').files[0];
 
-            const response = await fetch('/api/recipes', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    name: name,
-                    type: type,
-                    ingredients: ingredients,
-                    instructions: instructions
-                })
-            });
-
-            if (response.ok) {
-                alert('Recipe added successfully!');
-                window.location.href = 'index.html'; // Redirect to home page
+            if (photo) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const photoData = e.target.result;
+                    saveRecipe(name, type, ingredients, instructions, photoData);
+                };
+                reader.readAsDataURL(photo);
             } else {
-                alert('Failed to add recipe');
+                saveRecipe(name, type, ingredients, instructions, null);
+            }
+        });
+
+        function saveRecipe(name, type, ingredients, instructions, photo) {
+            const recipes = JSON.parse(localStorage.getItem('recipes')) || {};
+            if (!recipes[type]) {
+                recipes[type] = [];
+            }
+            recipes[type].push({ name, ingredients, instructions, photo });
+            localStorage.setItem('recipes', JSON.stringify(recipes));
+            window.location.href = 'index.html';
+        }
+
+        document.getElementById('photo').addEventListener('change', function() {
+            const file = document.getElementById('photo').files[0];
+            const preview = document.getElementById('photo-preview');
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            } else {
+                preview.src = '';
+                preview.style.display = 'none';
             }
         });
     </script>

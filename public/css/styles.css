@@ -7,10 +7,11 @@ body {
 }
 
 header {
-    background-color: #4CAF50;
+    background-color: #800000; /* Maroon theme */
     color: white;
-    padding: 10px 0;
+    padding: 15px 0;
     text-align: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
 nav h1 {
@@ -19,41 +20,39 @@ nav h1 {
 }
 
 .container {
-    max-width: 800px;
-    margin: 20px auto;
+    max-width: 900px;
+    margin: 30px auto;
     padding: 20px;
     background-color: #fff;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
 }
 
-.upload-section {
-    margin-bottom: 30px;
-}
-
 h2 {
     font-size: 1.8em;
-    color: #4CAF50;
+    color: #800000; /* Maroon theme */
 }
 
 label {
     display: block;
     margin: 10px 0 5px;
     font-weight: bold;
+    color: #555;
 }
 
-input, textarea {
+input, textarea, select {
     width: 100%;
     padding: 10px;
     margin-bottom: 10px;
     border: 1px solid #ccc;
     border-radius: 4px;
     font-size: 1em;
+    box-sizing: border-box;
 }
 
 button {
     padding: 12px 20px;
-    background-color: #4CAF50;
+    background-color: #800000; /* Maroon theme */
     color: #fff;
     border: none;
     border-radius: 4px;
@@ -63,13 +62,16 @@ button {
 }
 
 button:hover {
-    background-color: #45a049;
+    background-color: #660000; /* Darker maroon */
 }
 
 .tab {
     overflow: hidden;
     border-bottom: 1px solid #ccc;
     background-color: #f1f1f1;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
 }
 
 .tab button {
@@ -79,7 +81,10 @@ button:hover {
     cursor: pointer;
     padding: 14px 16px;
     transition: 0.3s;
-    color: black; /* Change tab text color to black */
+    color: #333;
+    flex: 1;
+    text-align: center;
+    font-size: 1em;
 }
 
 .tab button:hover {
@@ -97,25 +102,18 @@ button:hover {
     border-top: none;
 }
 
-#recipes-list {
-    margin-top: 20px;
-    padding: 0;
-    list-style-type: none;
-}
-
 .recipe-item {
     background-color: #f1f1f1;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
     padding: 15px;
     border: 1px solid #ddd;
     border-radius: 4px;
     font-size: 1em;
-    white-space: pre-wrap; /* Preserve white spaces and line breaks */
-    cursor: grab;
+    white-space: pre-wrap;
 }
 
 footer {
-    background-color: #4CAF50;
+    background-color: #800000; /* Maroon theme */
     color: white;
     text-align: center;
     padding: 10px 0;
@@ -125,25 +123,44 @@ footer {
 }
 
 @media (max-width: 600px) {
-    .container {
-        padding: 10px;
+    header, footer {
+        padding: 10px 0;
     }
 
-    h1 {
+    nav h1 {
         font-size: 1.8em;
+    }
+
+    .container {
+        padding: 10px;
     }
 
     h2 {
         font-size: 1.5em;
     }
 
-    input, button {
+    input, textarea, select, button {
         font-size: 1em;
         padding: 8px;
     }
 
     .recipe-item {
         padding: 10px;
+    }
+
+    .tab {
+        flex-direction: column;
+    }
+
+    .tab button {
+        padding: 10px;
+        flex: none;
+        text-align: left;
+        font-size: 1em;
+    }
+
+    .tab button:hover {
+        background-color: #ddd;
     }
 }
 
@@ -163,7 +180,7 @@ footer {
 
 .input-container button {
     padding: 10px;
-    background-color: #28a745;
+    background-color: #800000; /* Maroon theme */
     color: #fff;
     border: none;
     border-radius: 4px;
@@ -171,5 +188,5 @@ footer {
 }
 
 .input-container button:hover {
-    background-color: #218838;
+    background-color: #660000; /* Darker maroon */
 }
