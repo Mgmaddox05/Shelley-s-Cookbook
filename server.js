@@ -1,19 +1,26 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const jwt = require('jsonwebtoken');
-const bodyParser = require('body-parser');
-
-
+const multer = require('multer'); // Import multer for handling file uploads
+const Recipe = require('./models/Recipe');
 
 const app = express();
-app.use(bodyParser.json());
+app.use(express.json());
 
-const mongoURI = 'mongodb+srv://mgmaddox05:Kx3bhdig@cookbook.r8ytb.mongodb.net/';
+// Multer configuration for file uploads
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'uploads/');
+    },
+    filename: function (req, file, cb) {
+        cb(null, file.fieldname + '-' + Date.now());
+    }
+});
+const upload = multer({ storage: storage });
+
+const mongoURI = 'mongodb+srv://<username>:<password>@cluster0.mongodb.net/<dbname>?retryWrites=true&w=majority';
 mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => console.log('MongoDB connected'))
     .catch(err => console.log('MongoDB connection error:', err));
-
-
 
 const auth = (req, res, next) => {
     const token = req.header('Authorization').replace('Bearer ', '');
@@ -29,24 +36,10 @@ const auth = (req, res, next) => {
     }
 };
 
-const mongoose = require('mongoose');
-
-const RecipeSchema = new mongoose.Schema({
-    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-    name: { type: String, required: true },
-    type: { type: String, required: true },
-    ingredients: { type: String, required: true },
-    instructions: { type: String, required: true },
-    photo: { type: String }
-});
-
-const Recipe = mongoose.model('Recipe', RecipeSchema);
-
-module.exports = Recipe;
-
-
-app.post('/recipes', auth, async (req, res) => {
-    const { name, type, ingredients, instructions, photo } = req.body;
+// Add recipe endpoint with file upload
+app.post('/recipes', auth, upload.single('photo'), async (req, res) => {
+    const { name, type, ingredients, instructions } = req.body;
+    const photo = req.file ? req.file.path : '';
     try {
         const recipe = new Recipe({ userId: req.userId, name, type, ingredients, instructions, photo });
         await recipe.save();
@@ -54,10 +47,9 @@ app.post('/recipes', auth, async (req, res) => {
         res.status(201).send('Recipe added successfully');
     } catch (err) {
         console.error('Error saving recipe:', err);
-        res.status(400).json({ message: 'Error adding recipe', error: err.message });
+        res.status(400).send('Error adding recipe');
     }
 });
-
 
 app.get('/recipes', auth, async (req, res) => {
     try {
