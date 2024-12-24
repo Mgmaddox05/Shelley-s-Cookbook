@@ -7,135 +7,43 @@
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-    <header>
-        <nav>
-            <h1>White's Cookbook</h1>
-            <a href="index.html">Home</a>
-        </nav>
-    </header>
-    <main class="container">
-        <h2>Add a New Recipe</h2>
-        <form id="recipe-form">
-            <div class="input-container">
-                <label for="name">Recipe Name:</label>
-                <input type="text" id="name" name="name" required>
-                <button type="button" onclick="startVoiceRecognition('name')">🎤</button>
-            </div>
-            <div class="input-container">
-                <label for="type">Recipe Type:</label>
-                <select id="type" name="type" required>
-                    <option value="">Select Category</option>
-                    <option value="Poultry">Poultry</option>
-                    <option value="Beef">Beef</option>
-                    <option value="Pork">Pork</option>
-                    <option value="Mixed Meats">Mixed Meats</option>
-                    <option value="Mexican">Mexican</option>
-                    <option value="Soups">Soups</option>
-                    <option value="Pasta & Pizza">Pasta & Pizza</option>
-                    <option value="Appetizers">Appetizers</option>
-                    <option value="Snacks & Candy">Snacks & Candy</option>
-                    <option value="Cakes, Pies & Deserts">Cakes, Pies & Deserts</option>
-                </select>
-                <button type="button" onclick="startVoiceRecognition('type')">🎤</button>
-            </div>
-            <div class="input-container">
-                <label for="ingredients">Ingredients:</label>
-                <textarea id="ingredients" name="ingredients" required></textarea>
-                <button type="button" onclick="startVoiceRecognition('ingredients')">🎤</button>
-            </div>
-            <div class="input-container">
-                <label for="instructions">Instructions:</label>
-                <textarea id="instructions" name="instructions" required></textarea>
-                <button type="button" onclick="startVoiceRecognition('instructions')">🎤</button>
-            </div>
-            <div class="input-container">
-                <label for="photo">Take a Picture:</label>
-                <input type="file" id="photo" name="photo" accept="image/*" capture="camera" style="display:none;">
-                <button type="button" onclick="document.getElementById('photo').click();">📸 Take Photo</button>
-                <img id="photo-preview" src="" alt="Photo Preview" style="display:none; width:100px; height:100px; margin-top:10px;">
-            </div>
-            <div class="input-container">
-                <label for="file">Or Upload Recipe File:</label>
-                <input type="file" id="file" name="file" accept=".txt,.pdf">
-            </div>
-            <button type="submit">Add Recipe</button>
-        </form>
-    </main>
-    <footer>
-        <p>&copy; 2024 White's Cookbook. All rights reserved.</p>
-    </footer>
-    <script src="js/voice-to-text.js"></script>
+    <h2>Add Recipe</h2>
+    <form id="add-recipe-form">
+        <label for="name">Recipe Name:</label>
+        <input type="text" id="name" name="name" required>
+        <label for="type">Type:</label>
+        <input type="text" id="type" name="type" required>
+        <label for="ingredients">Ingredients:</label>
+        <textarea id="ingredients" name="ingredients" required></textarea>
+        <label for="instructions">Instructions:</label>
+        <textarea id="instructions" name="instructions" required></textarea>
+        <button type="submit">Add Recipe</button>
+    </form>
     <script>
-        // Function to read and parse text files
-        function parseRecipeFile(text) {
-            const [name, ingredients, instructions] = text.split('\n\n');
-            return [name, ingredients, instructions];
-        }
-
-        document.getElementById('recipe-form').addEventListener('submit', async function(e) {
+        document.getElementById('add-recipe-form').addEventListener('submit', async function(e) {
             e.preventDefault();
-
             const name = document.getElementById('name').value;
             const type = document.getElementById('type').value;
             const ingredients = document.getElementById('ingredients').value;
             const instructions = document.getElementById('instructions').value;
-            const photo = document.getElementById('photo').files[0];
-            const file = document.getElementById('file').files[0];
-            const token = localStorage.getItem('token');
-
-            // Function to save recipe to backend
-            async function saveRecipe(data) {
+            try {
                 const res = await fetch('/recipes', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
+                        'Authorization': 'Bearer ' + localStorage.getItem('token')
                     },
-                    body: JSON.stringify(data)
+                    body: JSON.stringify({ name, type, ingredients, instructions })
                 });
+                const data = await res.json();
                 if (res.ok) {
                     alert('Recipe added successfully!');
-                    window.location.href = 'index.html';
                 } else {
-                    alert('Error adding recipe');
+                    alert('Error adding recipe: ' + data.message);
                 }
-            }
-
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const text = e.target.result;
-                    const [fileName, fileIngredients, fileInstructions] = parseRecipeFile(text);
-                    saveRecipe({ name: fileName, type, ingredients: fileIngredients, instructions: fileInstructions, photo: null });
-                };
-                reader.readAsText(file);
-            } else if (photo) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const photoData = e.target.result;
-                    saveRecipe({ name, type, ingredients, instructions, photo: photoData });
-                };
-                reader.readAsDataURL(photo);
-            } else {
-                saveRecipe({ name, type, ingredients, instructions, photo: null });
-            }
-        });
-
-        // Function to display photo preview
-        document.getElementById('photo').addEventListener('change', function() {
-            const file = document.getElementById('photo').files[0];
-            const preview = document.getElementById('photo-preview');
-
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    preview.src = e.target.result;
-                    preview.style.display = 'block';
-                };
-                reader.readAsDataURL(file);
-            } else {
-                preview.src = '';
-                preview.style.display = 'none';
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error adding recipe: ' + error.message);
             }
         });
     </script>

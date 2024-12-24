@@ -1,21 +1,10 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const multer = require('multer'); // Import multer for handling file uploads
-const Recipe = require('./models/Recipe');
+const jwt = require('jsonwebtoken');
+const Recipe = require('./models/recipe'); // Adjust the path according to your project structure
 
 const app = express();
 app.use(express.json());
-
-// Multer configuration for file uploads
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, 'uploads/');
-    },
-    filename: function (req, file, cb) {
-        cb(null, file.fieldname + '-' + Date.now());
-    }
-});
-const upload = multer({ storage: storage });
 
 const mongoURI = 'mongodb+srv://<username>:<password>@cluster0.mongodb.net/<dbname>?retryWrites=true&w=majority';
 mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
@@ -36,18 +25,16 @@ const auth = (req, res, next) => {
     }
 };
 
-// Add recipe endpoint with file upload
-app.post('/recipes', auth, upload.single('photo'), async (req, res) => {
+app.post('/recipes', auth, async (req, res) => {
     const { name, type, ingredients, instructions } = req.body;
-    const photo = req.file ? req.file.path : '';
     try {
-        const recipe = new Recipe({ userId: req.userId, name, type, ingredients, instructions, photo });
+        const recipe = new Recipe({ userId: req.userId, name, type, ingredients, instructions });
         await recipe.save();
         console.log('Recipe saved:', recipe);
-        res.status(201).send('Recipe added successfully');
+        res.status(201).json({ message: 'Recipe added successfully' });
     } catch (err) {
         console.error('Error saving recipe:', err);
-        res.status(400).send('Error adding recipe');
+        res.status(400).json({ message: 'Error adding recipe', error: err.message });
     }
 });
 
