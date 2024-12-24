@@ -1,7 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
-const Recipe = require('./models/recipe'); // Adjust the path according to your project structure
+const Recipe = require('./models/Recipe'); // Ensure the path is correct
 
 const app = express();
 app.use(express.json());
