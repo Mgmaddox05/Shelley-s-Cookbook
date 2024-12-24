@@ -29,6 +29,8 @@ const auth = (req, res, next) => {
     }
 };
 
+const mongoose = require('mongoose');
+
 const RecipeSchema = new mongoose.Schema({
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     name: { type: String, required: true },
@@ -37,7 +39,11 @@ const RecipeSchema = new mongoose.Schema({
     instructions: { type: String, required: true },
     photo: { type: String }
 });
+
 const Recipe = mongoose.model('Recipe', RecipeSchema);
+
+module.exports = Recipe;
+
 
 app.post('/recipes', auth, async (req, res) => {
     const { name, type, ingredients, instructions, photo } = req.body;
